@@ -1,0 +1,100 @@
+version: '3.9'
+
+services:
+  server-1:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - redis
+    expose:
+      - 4040
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: 'unless-stopped'
+    networks:
+      - backend
+    environment:
+      - name=Server-1
+
+  server-2:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    links:
+      - redis
+    expose:
+      - 4040
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: 'unless-stopped'
+    networks:
+      - backend
+    environment:
+      - name=Server-2
+
+  server-3:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    links:
+      - redis
+    expose:
+      - 4040
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: 'unless-stopped'
+    networks:
+      - backend
+    environment:
+      - name=Server-3
+
+  server-4:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    links:
+      - redis
+    expose:
+      - 4040
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: 'unless-stopped'
+    networks:
+      - backend
+    environment:
+      - name=Server-4
+
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - '6379:6379'
+      - '8001:8001'
+    restart: 'unless-stopped'
+    networks:
+      - backend
+
+  haproxy:
+    image: haproxy:latest
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    links:
+      - server-1
+      - server-2
+      - server-3
+      - server-4
+    ports:
+      - '4040:80'
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local

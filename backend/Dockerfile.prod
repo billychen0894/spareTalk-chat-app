@@ -1,0 +1,19 @@
+# NodeJS Version 16
+FROM node:18
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Install app dependencies
+COPY package*.json ./
+RUN npm install
+
+# Bundle app source
+COPY . .
+
+# Set Env
+ENV NODE_ENV production
+EXPOSE 4040
+
+# Cmd script
+CMD ["npm", "run", "start"]
